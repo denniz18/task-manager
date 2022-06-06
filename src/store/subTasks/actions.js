@@ -13,5 +13,5 @@ export const {
   fetchSubTasksStart,
   fetchSubTasksFailure,
   fetchSubTasksSuccess,
-  deleteTag,
+  removeSubTask,
 } = subTasksSlice.actions;

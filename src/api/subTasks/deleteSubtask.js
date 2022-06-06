@@ -3,7 +3,7 @@ import delay from '../../utils/delay';
 
 export default delay((subTaskId) => {
   const subTasks = Storage.subTasks.get();
-  const subTask = subTasks.find((t) => t.id !== subTaskId);
+  const subTask = subTasks.find((t) => t.id === subTaskId);
 
   console.log('subTask', subTask, 'id', subTaskId);
 

@@ -1,4 +1,4 @@
-import { all, call, put, takeEvery } from 'redux-saga/effects';
+import { all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { fetchSubTasks, deleteSubtask } from '../../api/subTasks';
 import {
   fetchSubTasksStart,
@@ -6,8 +6,9 @@ import {
   fetchSubTasksFailure,
   fetchSubTasksRequest,
   deleteSubTaskRequest,
-  deleteTag,
+  removeSubTask,
 } from './actions';
+import { deleteTask } from '../tasks/actions';
 
 function* loadSubTasks({ payload }) {
   try {
@@ -20,8 +21,16 @@ function* loadSubTasks({ payload }) {
 }
 
 function* deleteSubTask({ payload }) {
-  yield call(deleteSubtask, payload);
-  yield put(deleteTag(payload));
+  yield put(removeSubTask(payload.id));
+  yield call(deleteSubtask, payload.id);
+  const subTasks = yield select((state) =>
+    state.subTasks.dataSubTasks.filter(
+      (subTask) => subTask.taskId === payload.taskId
+    )
+  );
+  if (!subTasks.length) {
+    yield put(deleteTask(payload.taskId));
+  }
 }
 
 export function* subTasksSaga() {

@@ -10,4 +10,5 @@ export const {
   fetchTasksSuccess,
   addTask,
   fetchSubTask,
+  deleteTask,
 } = tasksSlice.actions;

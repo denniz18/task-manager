@@ -9,7 +9,7 @@ import {
   Button,
 } from './SubTask.style';
 
-export const SubTask = ({ data }) => {
+export const SubTask = ({ data, taskId }) => {
   const { labels, title, id } = data;
   const deleteSubTask = useAction(deleteSubTaskRequest);
 
@@ -17,7 +17,7 @@ export const SubTask = ({ data }) => {
     <SubTaskContainer>
       <HeaderContent>
         <span>Title: {title}</span>
-        <Button onClick={() => deleteSubTask(id)}>Remove</Button>
+        <Button onClick={() => deleteSubTask({ id, taskId })}>Remove</Button>
       </HeaderContent>
       <LabelsWrapper>
         {labels.map((label, index) => (

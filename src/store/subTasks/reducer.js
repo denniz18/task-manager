@@ -24,7 +24,7 @@ export const subTasksSlice = createSlice({
       dataSubTasks: [...state.dataSubTasks, ...action.payload],
       loading: false,
     }),
-    deleteTag: (state, { payload }) => ({
+    removeSubTask: (state, { payload }) => ({
       ...state,
       dataSubTasks: [
         ...state.dataSubTasks.filter((subTask) => subTask.id !== payload),

@@ -30,7 +30,7 @@ export const Task = ({ task }) => {
       {loading && <h3>Loading...</h3>}
 
       {filterSubTasks.map((filterSubTask) => (
-        <SubTask key={filterSubTask.id} data={filterSubTask} />
+        <SubTask key={filterSubTask.id} data={filterSubTask} taskId={id} />
       ))}
     </TaskContainer>
   );
