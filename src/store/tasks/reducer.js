@@ -28,12 +28,6 @@ export const tasksSlice = createSlice({
       ...state,
       dataTasks: [...state.dataTasks, action.payload],
     }),
-    deleteTask: (state, { payload }) => {
-      return {
-        ...state,
-        dataTasks: [...state.dataTasks.filter((task) => task.id !== payload)],
-      };
-    },
   },
 });
 

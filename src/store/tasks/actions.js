@@ -9,6 +9,4 @@ export const {
   fetchTasksFailure,
   fetchTasksSuccess,
   addTask,
-  fetchSubTask,
-  deleteTask,
 } = tasksSlice.actions;
