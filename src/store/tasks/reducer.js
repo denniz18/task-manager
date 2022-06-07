@@ -1,9 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  dataTasks: [],
-  loading: false,
-  error: null,
+  data: [],
+  isPending: false,
 };
 
 export const tasksSlice = createSlice({
@@ -12,21 +11,20 @@ export const tasksSlice = createSlice({
   reducers: {
     fetchTasksStart: (state) => ({
       ...state,
-      loading: true,
+      isPending: true,
     }),
-    fetchTasksFailure: (state, action) => ({
+    setTasks: (state, action) => ({
       ...state,
-      loading: false,
-      error: action.payload,
-    }),
-    fetchTasksSuccess: (state, action) => ({
-      ...state,
-      dataTasks: [...state.dataTasks, ...action.payload],
-      loading: false,
+      data: action.payload,
+      isPending: false,
     }),
     addTask: (state, action) => ({
       ...state,
-      dataTasks: [...state.dataTasks, action.payload],
+      data: [...state.data, action.payload],
+    }),
+    deleteTask: (state, action) => ({
+      ...state,
+      data: state.data.filter((task) => task.id !== action.payload),
     }),
   },
 });

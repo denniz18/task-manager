@@ -4,9 +4,5 @@ import { tasksSlice } from './reducer';
 export const addTaskRequest = createAction('tasks/addTaskRequest');
 export const fetchTasksRequest = createAction('tasks/fetchTasksRequest');
 
-export const {
-  fetchTasksStart,
-  fetchTasksFailure,
-  fetchTasksSuccess,
-  addTask,
-} = tasksSlice.actions;
+export const { fetchTasksStart, setTasks, addTask, deleteTask } =
+  tasksSlice.actions;

@@ -1,6 +1,6 @@
 import React from 'react';
 import useAction from '../../hooks/useAction';
-import { deleteSubTaskRequest } from '../../store/subTasks/actions';
+import { setDeleteSubTaskRequest } from '../../store/subtasks/actions';
 import {
   SubTaskContainer,
   HeaderContent,
@@ -11,13 +11,14 @@ import {
 
 export const SubTask = ({ data, taskId }) => {
   const { labels, title, id } = data;
-  const deleteSubTask = useAction(deleteSubTaskRequest);
+
+  const setDeleteSubTask = useAction(setDeleteSubTaskRequest);
 
   return (
     <SubTaskContainer>
       <HeaderContent>
         <span>Title: {title}</span>
-        <Button onClick={() => deleteSubTask({ id, taskId })}>Remove</Button>
+        <Button onClick={() => setDeleteSubTask({ id, taskId })}>Remove</Button>
       </HeaderContent>
       <LabelsWrapper>
         {labels.map((label, index) => (
