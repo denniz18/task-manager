@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
 
 const initialState = {
   data: [],
@@ -22,10 +22,21 @@ export const tasksSlice = createSlice({
       ...state,
       data: [...state.data, action.payload],
     }),
-    deleteTask: (state, action) => ({
-      ...state,
-      data: state.data.filter((task) => task.id !== action.payload),
-    }),
+    setRemoveSubtask: (state, { payload }) => {
+      const taskIndex = current(state).data.findIndex(
+        (task) => task.id === payload.taskId
+      );
+      const updateSubtasks = current(state).data[taskIndex].subtasks.filter(
+        (subtask) => subtask.id !== payload.id
+      );
+      state.data[taskIndex].subtasks = updateSubtasks;
+    },
+    setRemoveTask: (state, { payload }) => {
+      return {
+        ...state,
+        data: state.data.filter((task) => task.id !== payload),
+      };
+    },
   },
 });
 

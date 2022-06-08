@@ -12,14 +12,9 @@ export const TaskContainer = styled.div`
 export const TaskInfo = styled.div`
   display: flex;
   width: 100%;
-  justify-content: space-between;
+  justify-content: center;
   padding: 5px;
   background-color: gainsboro;
-`;
-
-export const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: end;
 `;
 
 export const TimeAndTitle = styled.div`

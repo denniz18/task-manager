@@ -11,6 +11,7 @@ export const Button = styled.button`
   height: 30px;
   width: 135px;
   margin-left: 20px;
+  margin-right: 20px;
 `;
 
 export const TitleContainer = styled.div`

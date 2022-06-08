@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { selectTasks } from '../../store/tasks/selectors';
 import { addTaskRequest, fetchTasksRequest } from '../../store/tasks/actions';
@@ -16,7 +16,7 @@ import {
 } from './App.style';
 
 export const App = () => {
-  const { isPending, data } = useSelector(selectTasks);
+  const { isPending, data: tasks } = useSelector(selectTasks);
   const store = useSelector((store) => store);
   const addTask = useAction(addTaskRequest);
   const fetchTasks = useAction(fetchTasksRequest);
@@ -49,8 +49,8 @@ export const App = () => {
           <ActionsTitle>Subtasks Actions</ActionsTitle>
         </ActionsWrapper>
 
-        {data.map((dataTask) => (
-          <Task task={dataTask} key={dataTask.createTime} />
+        {tasks.map((task) => (
+          <Task task={task} key={task.createTime} />
         ))}
       </Wrapper>
     </>

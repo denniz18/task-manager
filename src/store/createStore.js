@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import tasks from './tasks/reducer';
-import subTasks from './subtasks/reducer';
 import { rootSaga } from './saga';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -9,7 +8,6 @@ const sagaMiddleware = createSagaMiddleware();
 export const store = configureStore({
   reducer: {
     tasks,
-    subTasks,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false, serializableCheck: false }).concat(
