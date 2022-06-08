@@ -12,18 +12,13 @@ import {
 export const SubTask = ({ data, taskId }) => {
   const { labels, title, id } = data;
   const deleteSubtask = useAction(deleteSubtaskRequest);
+  const deleteSubtaskHandler = () => deleteSubtask({ id, taskId });
 
   return (
     <SubTaskContainer>
       <HeaderContent>
         <span>Title: {title}</span>
-        <Button
-          onClick={() => {
-            deleteSubtask({ id, taskId });
-          }}
-        >
-          Remove
-        </Button>
+        <Button onClick={deleteSubtaskHandler}>Remove</Button>
       </HeaderContent>
       <LabelsWrapper>
         {labels.map((label, index) => (

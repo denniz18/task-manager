@@ -36,3 +36,28 @@ export const ActionsTitle = styled.span`
   font-size: 25px;
   font-weight: bold;
 `;
+
+export const LabelsContainer = styled.div`
+  display: flex;
+  margin-left: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+
+export const ItemLabel = styled.div`
+  display: flex;
+  align-items: center;
+  height: 20px;
+  border: 1px solid black;
+  background-color: ${({ select }) => (select ? 'darkgray;' : 'gainsboro')};
+  border-radius: 3px;
+  margin-right: 5px;
+  padding: 0 3px;
+  cursor: pointer;
+`;
+
+export const LabelTitle = styled.span`
+  font-size: 18px;
+  text-decoration: underline;
+  margin-right: 10px;
+`;
