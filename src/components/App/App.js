@@ -20,25 +20,18 @@ import {
 
 export const App = () => {
   const { isPending, data: tasks } = useSelector(selectTasks);
-  const store = useSelector((store) => store);
   const addTask = useAction(addTaskRequest);
   const fetchTasks = useAction(fetchTasksRequest);
   const [filterTasks, setFilterTasks] = useState([]);
   const [selectLabels, setSelectLabels] = useState([]);
-  const labelsRef = useRef([]);
   const [searchText, setSearchText] = useState('');
 
   const handlerSelectLabels = (label) => {
-    if (!labelsRef.current.includes(label)) {
-      labelsRef.current.push(label);
+    if (!selectLabels.includes(label)) {
       setSelectLabels((prev) => [...prev, label]);
     } else {
-      labelsRef.current = [
-        ...labelsRef.current.filter((itemLabel) => itemLabel !== label),
-      ];
       setSelectLabels((prev) => prev.filter((item) => item !== label));
     }
-    handlerFilter(searchText, labelsRef.current);
   };
 
   let labelsArray = [];
@@ -93,8 +86,8 @@ export const App = () => {
   };
 
   useEffect(() => {
-    handlerFilter(searchText, labelsRef.current);
-  }, [searchText]);
+    handlerFilter(searchText, selectLabels);
+  }, [searchText, selectLabels]);
 
   useEffect(() => {
     if (!isPending) {
@@ -104,7 +97,7 @@ export const App = () => {
 
   useEffect(() => {
     setFilterTasks(tasks);
-    handlerFilter(searchText, labelsRef.current);
+    handlerFilter(searchText, selectLabels);
   }, [tasks]);
 
   if (isPending) return <Loader />;
