@@ -26,6 +26,7 @@ export const App = () => {
   const [filterTasks, setFilterTasks] = useState([]);
   const [selectLabels, setSelectLabels] = useState([]);
   const labelsRef = useRef([]);
+  const [searchText, setSearchText] = useState('');
 
   const handlerSelectLabels = (label) => {
     if (!labelsRef.current.includes(label)) {
@@ -37,17 +38,11 @@ export const App = () => {
       ];
       setSelectLabels((prev) => prev.filter((item) => item !== label));
     }
-    handleFilterTasksByLable(labelsRef.current, filterTasks);
+    handleFilterTasksByLable(labelsRef.current);
   };
 
-  const handleFilterTasksByLable = (labels, paramTasks) => {
-    console.log({ labels, paramTasks });
-    // if (!labels.length) {
-    //   console.log('here', tasks);
-    //   setFilterTasks(tasks);
-    // }
-
-    const updateTasks = paramTasks.reduce((result, task) => {
+  const handleFilterTasksByLable = (labels) => {
+    const updateTasks = tasks.reduce((result, task) => {
       const updateSubTasks = task.subtasks.filter((subtask) =>
         labels.every((labelItem) => subtask.labels.includes(labelItem))
       );
@@ -74,8 +69,33 @@ export const App = () => {
     )
   );
 
-  console.log('store', store);
-  console.log('labelsRef.current', labelsRef.current);
+  const handlerInputFilter = (text) => {
+    const updateTasks = tasks.reduce((result, task) => {
+      const updateSubTasks = task.subtasks.filter((subtask) =>
+        subtask.title.toLowerCase().includes(text.toLowerCase().trim())
+      );
+
+      task = {
+        ...task,
+        subtasks: updateSubTasks,
+      };
+
+      if (!task.subtasks.length) {
+        task.title.toLowerCase().includes(text.toLowerCase().trim()) &&
+          result.push(task);
+      } else {
+        result.push(task);
+      }
+
+      return result;
+    }, []);
+
+    setFilterTasks(updateTasks);
+  };
+
+  useEffect(() => {
+    handlerInputFilter(searchText);
+  }, [searchText]);
 
   useEffect(() => {
     if (!isPending) {
@@ -84,11 +104,14 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    setFilterTasks(tasks);
     if (!labelsRef.current.length) {
       setFilterTasks(tasks);
     }
-  }, [tasks, labelsRef.current]);
+  }, [labelsRef.current]);
+
+  useEffect(() => {
+    setFilterTasks(tasks);
+  }, [tasks]);
 
   if (isPending) return <Loader />;
 
@@ -121,6 +144,16 @@ export const App = () => {
             ))}
           </LabelsContainer>
         </ActionsWrapper>
+
+        <div>
+          Search tasks and subtasks:&nbsp;
+          <input
+            type="text"
+            onChange={(e) => setSearchText(e.target.value)}
+            value={searchText}
+            placeholder={'type text'}
+          />
+        </div>
 
         {filterTasks.map((task) => (
           <Task task={task} key={task.createTime} />
