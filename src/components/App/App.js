@@ -38,13 +38,22 @@ export const App = () => {
       ];
       setSelectLabels((prev) => prev.filter((item) => item !== label));
     }
-    handleFilterTasksByLable(labelsRef.current);
+    handlerFilter(searchText, labelsRef.current);
   };
 
-  const handleFilterTasksByLable = (labels) => {
-    const updateTasks = tasks.reduce((result, task) => {
+  let labelsArray = [];
+  tasks.forEach((task) =>
+    task.subtasks.forEach((subtask) =>
+      subtask.labels.forEach(
+        (label) => !labelsArray.includes(label) && labelsArray.push(label)
+      )
+    )
+  );
+
+  const handlerFilter = (text, selectLabels) => {
+    const updatingTasksByLabel = tasks.reduce((result, task) => {
       const updateSubTasks = task.subtasks.filter((subtask) =>
-        labels.every((labelItem) => subtask.labels.includes(labelItem))
+        selectLabels.every((labelItem) => subtask.labels.includes(labelItem))
       );
 
       task = {
@@ -57,44 +66,34 @@ export const App = () => {
       return result;
     }, []);
 
-    setFilterTasks(updateTasks);
-  };
+    const updateTasksBySearchField = updatingTasksByLabel.reduce(
+      (result, task) => {
+        const updateSubTasks = task.subtasks.filter((subtask) =>
+          subtask.title.toLowerCase().includes(text.toLowerCase().trim())
+        );
 
-  let labelsArray = [];
-  tasks.forEach((task) =>
-    task.subtasks.forEach((subtask) =>
-      subtask.labels.forEach(
-        (label) => !labelsArray.includes(label) && labelsArray.push(label)
-      )
-    )
-  );
+        task = {
+          ...task,
+          subtasks: updateSubTasks,
+        };
 
-  const handlerInputFilter = (text) => {
-    const updateTasks = tasks.reduce((result, task) => {
-      const updateSubTasks = task.subtasks.filter((subtask) =>
-        subtask.title.toLowerCase().includes(text.toLowerCase().trim())
-      );
-
-      task = {
-        ...task,
-        subtasks: updateSubTasks,
-      };
-
-      if (!task.subtasks.length) {
-        task.title.toLowerCase().includes(text.toLowerCase().trim()) &&
+        if (!task.subtasks.length) {
+          task.title.toLowerCase().includes(text.toLowerCase().trim()) &&
+            result.push(task);
+        } else {
           result.push(task);
-      } else {
-        result.push(task);
-      }
+        }
 
-      return result;
-    }, []);
+        return result;
+      },
+      []
+    );
 
-    setFilterTasks(updateTasks);
+    setFilterTasks(updateTasksBySearchField);
   };
 
   useEffect(() => {
-    handlerInputFilter(searchText);
+    handlerFilter(searchText, labelsRef.current);
   }, [searchText]);
 
   useEffect(() => {
@@ -104,13 +103,8 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    if (!labelsRef.current.length) {
-      setFilterTasks(tasks);
-    }
-  }, [labelsRef.current]);
-
-  useEffect(() => {
     setFilterTasks(tasks);
+    handlerFilter(searchText, labelsRef.current);
   }, [tasks]);
 
   if (isPending) return <Loader />;
