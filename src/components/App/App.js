@@ -26,33 +26,33 @@ export const App = () => {
   const { isPending, data: tasks } = useSelector(selectTasks);
   const addTask = useAction(addTaskRequest);
   const fetchTasks = useAction(fetchTasksRequest);
-  const [filterTasks, setFilterTasks] = useState([]);
-  const [selectLabels, setSelectLabels] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [selectedLabels, setSelectedLabels] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [sortValue, setSortValue] = useState('');
   const options = ['date', 'name'];
 
-  const handlerSelectLabels = (label) => {
-    if (!selectLabels.includes(label)) {
-      setSelectLabels((prev) => [...prev, label]);
+  const selectLabels = (label) => {
+    if (!selectedLabels.includes(label)) {
+      setSelectedLabels((prev) => [...prev, label]);
     } else {
-      setSelectLabels((prev) => prev.filter((item) => item !== label));
+      setSelectedLabels((prev) => prev.filter((item) => item !== label));
     }
   };
 
-  let labelsArray = [];
+  let allLabels = [];
   tasks.forEach((task) =>
     task.subtasks.forEach((subtask) =>
       subtask.labels.forEach(
-        (label) => !labelsArray.includes(label) && labelsArray.push(label)
+        (label) => !allLabels.includes(label) && allLabels.push(label)
       )
     )
   );
 
-  const handlerFilter = (text, selectLabels, sortValue) => {
-    const updatingTasksByLabel = tasks.reduce((result, task) => {
+  const filterTasks = (text, selectedLabels, sortValue) => {
+    const updatedTasksByLabel = tasks.reduce((result, task) => {
       const updateSubTasks = task.subtasks.filter((subtask) =>
-        selectLabels.every((labelItem) => subtask.labels.includes(labelItem))
+        selectedLabels.every((labelItem) => subtask.labels.includes(labelItem))
       );
 
       task = {
@@ -65,7 +65,7 @@ export const App = () => {
       return result;
     }, []);
 
-    const updateTasksBySearchField = updatingTasksByLabel.reduce(
+    const updatedTasksBySearchText = updatedTasksByLabel.reduce(
       (result, task) => {
         const updateSubTasks = task.subtasks.filter((subtask) =>
           subtask.title.toLowerCase().includes(text.toLowerCase().trim())
@@ -89,14 +89,14 @@ export const App = () => {
     );
 
     sortValue === 'name' &&
-      updateTasksBySearchField.sort((a, b) => a.title.localeCompare(b.title));
+      updatedTasksBySearchText.sort((a, b) => a.title.localeCompare(b.title));
 
-    setFilterTasks(updateTasksBySearchField);
+    setFilteredTasks(updatedTasksBySearchText);
   };
 
   useEffect(() => {
-    handlerFilter(searchText, selectLabels, sortValue);
-  }, [searchText, selectLabels, sortValue]);
+    filterTasks(searchText, selectedLabels, sortValue);
+  }, [searchText, selectedLabels, sortValue]);
 
   useEffect(() => {
     if (!isPending) {
@@ -105,8 +105,8 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    setFilterTasks(tasks);
-    handlerFilter(searchText, selectLabels, sortValue);
+    setFilteredTasks(tasks);
+    filterTasks(searchText, selectedLabels, sortValue);
   }, [tasks]);
 
   if (isPending) return <Loader />;
@@ -141,10 +141,10 @@ export const App = () => {
           <ActionsTitle>Subtasks Actions</ActionsTitle>
           <LabelsContainer>
             <LabelTitle>Labels:</LabelTitle>
-            {labelsArray.map((label) => (
+            {allLabels.map((label) => (
               <ItemLabel
-                select={selectLabels.includes(label)}
-                onClick={() => handlerSelectLabels(label)}
+                select={selectedLabels.includes(label)}
+                onClick={() => selectLabels(label)}
                 key={label}
               >
                 {label}
@@ -163,7 +163,7 @@ export const App = () => {
           />
         </ActionsWrapper>
 
-        {filterTasks.map((task) => (
+        {filteredTasks.map((task) => (
           <Task task={task} key={task.createTime} />
         ))}
       </Wrapper>

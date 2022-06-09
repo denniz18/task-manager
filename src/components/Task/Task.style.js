@@ -27,3 +27,8 @@ export const SubTasksContainer = styled.div`
   width: 100%;
   flex-direction: column;
 `;
+
+export const HeaderInfo = styled.span`
+  font-size: 16px;
+  margin-bottom: 5px;
+`;

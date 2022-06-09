@@ -26,10 +26,10 @@ export const tasksSlice = createSlice({
       const taskIndex = current(state).data.findIndex(
         (task) => task.id === payload.taskId
       );
-      const updateSubtasks = current(state).data[taskIndex].subtasks.filter(
+      const filteredSubtasks = current(state).data[taskIndex].subtasks.filter(
         (subtask) => subtask.id !== payload.id
       );
-      state.data[taskIndex].subtasks = updateSubtasks;
+      state.data[taskIndex].subtasks = filteredSubtasks;
     },
     setRemoveTask: (state, { payload }) => {
       return {

@@ -5,6 +5,7 @@ import {
   TimeAndTitle,
   SubTasksContainer,
   TaskInfo,
+  HeaderInfo,
 } from './Task.style';
 
 export const Task = ({ task }) => {
@@ -14,9 +15,8 @@ export const Task = ({ task }) => {
     <TaskContainer>
       <TaskInfo>
         <TimeAndTitle>
-          <span>Time: {createTime}</span>
-          <br />
-          <span>Title: {title}</span>
+          <HeaderInfo>Time: {createTime}</HeaderInfo>
+          <HeaderInfo>Title: {title}</HeaderInfo>
         </TimeAndTitle>
       </TaskInfo>
 

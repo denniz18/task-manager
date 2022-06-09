@@ -27,14 +27,14 @@ function* loadTasks() {
       tasks.map((task) => call(fetchSubTasks, task.id))
     );
 
-    const tasksGroup = tasks.map((task, index) => ({
+    const updatedTasks = tasks.map((task, index) => ({
       ...task,
       subtasks: subtasks[index],
     }));
 
-    yield put(setTasks(tasksGroup));
+    yield put(setTasks(updatedTasks));
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -45,7 +45,7 @@ function* createNewTask() {
     task.subtasks = subtasks;
     yield put(addTask(task));
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -59,7 +59,7 @@ function* removeSubTask({ payload }) {
     }
     yield call(deleteSubtask, payload.id);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
