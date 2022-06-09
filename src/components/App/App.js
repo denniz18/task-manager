@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectTasks } from '../../store/tasks/selectors';
 import { addTaskRequest, fetchTasksRequest } from '../../store/tasks/actions';
@@ -16,6 +16,10 @@ import {
   LabelsContainer,
   ItemLabel,
   LabelTitle,
+  InputSearch,
+  SortContainer,
+  SortLabel,
+  SortSelect,
 } from './App.style';
 
 export const App = () => {
@@ -25,6 +29,8 @@ export const App = () => {
   const [filterTasks, setFilterTasks] = useState([]);
   const [selectLabels, setSelectLabels] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [sortValue, setSortValue] = useState('');
+  const options = ['date', 'name'];
 
   const handlerSelectLabels = (label) => {
     if (!selectLabels.includes(label)) {
@@ -43,7 +49,7 @@ export const App = () => {
     )
   );
 
-  const handlerFilter = (text, selectLabels) => {
+  const handlerFilter = (text, selectLabels, sortValue) => {
     const updatingTasksByLabel = tasks.reduce((result, task) => {
       const updateSubTasks = task.subtasks.filter((subtask) =>
         selectLabels.every((labelItem) => subtask.labels.includes(labelItem))
@@ -82,12 +88,15 @@ export const App = () => {
       []
     );
 
+    sortValue === 'name' &&
+      updateTasksBySearchField.sort((a, b) => a.title.localeCompare(b.title));
+
     setFilterTasks(updateTasksBySearchField);
   };
 
   useEffect(() => {
-    handlerFilter(searchText, selectLabels);
-  }, [searchText, selectLabels]);
+    handlerFilter(searchText, selectLabels, sortValue);
+  }, [searchText, selectLabels, sortValue]);
 
   useEffect(() => {
     if (!isPending) {
@@ -97,7 +106,7 @@ export const App = () => {
 
   useEffect(() => {
     setFilterTasks(tasks);
-    handlerFilter(searchText, selectLabels);
+    handlerFilter(searchText, selectLabels, sortValue);
   }, [tasks]);
 
   if (isPending) return <Loader />;
@@ -114,6 +123,18 @@ export const App = () => {
         <ActionsWrapper>
           <ActionsTitle>Tasks Actions</ActionsTitle>
           <Button onClick={addTask}>Create new task</Button>
+          <SortContainer>
+            <SortLabel htmlFor="tasks">Sort by:</SortLabel>
+            <SortSelect
+              name="tasks"
+              id="tasks"
+              onChange={(e) => setSortValue(e.target.value)}
+            >
+              {options.map((optnItem) => (
+                <option key={optnItem}>{optnItem}</option>
+              ))}
+            </SortSelect>
+          </SortContainer>
         </ActionsWrapper>
 
         <ActionsWrapper>
@@ -132,15 +153,15 @@ export const App = () => {
           </LabelsContainer>
         </ActionsWrapper>
 
-        <div>
-          Search tasks and subtasks:&nbsp;
-          <input
+        <ActionsWrapper>
+          <ActionsTitle>Search tasks and subtasks</ActionsTitle>
+          <InputSearch
             type="text"
             onChange={(e) => setSearchText(e.target.value)}
             value={searchText}
             placeholder={'type text'}
           />
-        </div>
+        </ActionsWrapper>
 
         {filterTasks.map((task) => (
           <Task task={task} key={task.createTime} />

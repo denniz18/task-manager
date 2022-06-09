@@ -61,3 +61,29 @@ export const LabelTitle = styled.span`
   text-decoration: underline;
   margin-right: 10px;
 `;
+
+export const InputSearch = styled.input`
+  margin-left: 15px;
+  background-color: gainsboro;
+  border: 1px solid black;
+  border-radius: 4px;
+`;
+
+export const SortContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const SortLabel = styled.label`
+  font-size: 18px;
+  text-decoration: underline;
+`;
+
+export const SortSelect = styled.select`
+  height: 30px;
+  border-radius: 4px;
+  background-color: gainsboro;
+  margin-left: 10px;
+  border: 1px solid black;
+`;
