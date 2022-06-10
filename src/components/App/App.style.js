@@ -49,7 +49,8 @@ export const ItemLabel = styled.div`
   align-items: center;
   height: 20px;
   border: 1px solid black;
-  background-color: ${({ select }) => (select ? 'darkgray;' : 'gainsboro')};
+  background-color: ${({ isSelected }) =>
+    isSelected ? 'darkgray;' : 'gainsboro'};
   border-radius: 3px;
   margin-right: 5px;
   padding: 0 3px;

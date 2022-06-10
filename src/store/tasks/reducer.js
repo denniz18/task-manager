@@ -23,13 +23,18 @@ export const tasksSlice = createSlice({
       data: [...state.data, action.payload],
     }),
     setRemoveSubtask: (state, { payload }) => {
-      const taskIndex = current(state).data.findIndex(
-        (task) => task.id === payload.taskId
-      );
-      const filteredSubtasks = current(state).data[taskIndex].subtasks.filter(
-        (subtask) => subtask.id !== payload.id
-      );
-      state.data[taskIndex].subtasks = filteredSubtasks;
+      return {
+        ...state,
+        data: state.data.map((task) => {
+          if (task.id !== payload.taskId) return task;
+          return {
+            ...task,
+            subtasks: task.subtasks.filter(
+              (subtask) => subtask.id !== payload.id
+            ),
+          };
+        }),
+      };
     },
     setRemoveTask: (state, { payload }) => {
       return {

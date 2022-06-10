@@ -53,8 +53,8 @@ function* removeSubTask({ payload }) {
   try {
     yield put(setRemoveSubtask(payload));
     const tasks = yield select((store) => store.tasks.data);
-    const taskIndex = tasks.findIndex((task) => task.id === payload.taskId);
-    if (!tasks[taskIndex].subtasks.length) {
+    const task = tasks.find((task) => task.id === payload.taskId);
+    if (!task.subtasks.length) {
       yield put(setRemoveTask(payload.taskId));
     }
     yield call(deleteSubtask, payload.id);

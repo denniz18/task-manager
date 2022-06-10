@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectTasks } from '../../store/tasks/selectors';
 import { addTaskRequest, fetchTasksRequest } from '../../store/tasks/actions';
@@ -22,34 +22,33 @@ import {
   SortSelect,
 } from './App.style';
 
+const options = ['date', 'name'];
+
 export const App = () => {
   const { isPending, data: tasks } = useSelector(selectTasks);
+
   const addTask = useAction(addTaskRequest);
   const fetchTasks = useAction(fetchTasksRequest);
-  const [filteredTasks, setFilteredTasks] = useState([]);
+
   const [selectedLabels, setSelectedLabels] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [sortValue, setSortValue] = useState('');
-  const options = ['date', 'name'];
 
-  const selectLabels = (label) => {
-    if (!selectedLabels.includes(label)) {
-      setSelectedLabels((prev) => [...prev, label]);
-    } else {
-      setSelectedLabels((prev) => prev.filter((item) => item !== label));
-    }
-  };
+  const labels = useMemo(() => {
+    const labelsSet = new Set();
 
-  let allLabels = [];
-  tasks.forEach((task) =>
-    task.subtasks.forEach((subtask) =>
-      subtask.labels.forEach(
-        (label) => !allLabels.includes(label) && allLabels.push(label)
-      )
-    )
-  );
+    tasks.forEach((task) => {
+      task.subtasks.forEach((subtask) => {
+        subtask.labels.forEach((label) => labelsSet.add(label));
+      });
+    });
 
-  const filterTasks = (text, selectedLabels, sortValue) => {
+    const result = [...labelsSet];
+    result.sort();
+    return result;
+  }, [tasks]);
+
+  const filteredAndSortedTasks = useMemo(() => {
     const updatedTasksByLabel = tasks.reduce((result, task) => {
       const updateSubTasks = task.subtasks.filter((subtask) =>
         selectedLabels.every((labelItem) => subtask.labels.includes(labelItem))
@@ -65,10 +64,12 @@ export const App = () => {
       return result;
     }, []);
 
+    const substring = searchText.toLowerCase().trim();
+
     const updatedTasksBySearchText = updatedTasksByLabel.reduce(
       (result, task) => {
         const updateSubTasks = task.subtasks.filter((subtask) =>
-          subtask.title.toLowerCase().includes(text.toLowerCase().trim())
+          subtask.title.toLowerCase().includes(substring)
         );
 
         task = {
@@ -77,8 +78,7 @@ export const App = () => {
         };
 
         if (!task.subtasks.length) {
-          task.title.toLowerCase().includes(text.toLowerCase().trim()) &&
-            result.push(task);
+          task.title.toLowerCase().includes(substring) && result.push(task);
         } else {
           result.push(task);
         }
@@ -88,15 +88,32 @@ export const App = () => {
       []
     );
 
-    sortValue === 'name' &&
+    sortValue.includes('name') &&
       updatedTasksBySearchText.sort((a, b) => a.title.localeCompare(b.title));
 
-    setFilteredTasks(updatedTasksBySearchText);
-  };
+    return updatedTasksBySearchText;
+  }, [searchText, selectedLabels, sortValue, tasks]);
 
-  useEffect(() => {
-    filterTasks(searchText, selectedLabels, sortValue);
-  }, [searchText, selectedLabels, sortValue]);
+  const handleSelectLabel = useCallback((e) => {
+    const label = e.target.dataset.label;
+
+    setSelectedLabels((prevSelectedLabels) => {
+      if (!prevSelectedLabels.includes(label)) {
+        return [...prevSelectedLabels, label];
+      } else {
+        return prevSelectedLabels.filter(
+          (prevSelectedLabel) => prevSelectedLabel !== label
+        );
+      }
+    });
+  }, []);
+
+  const handleChangeSearch = useCallback(
+    (e) => setSearchText(e.target.value),
+    []
+  );
+
+  const handleSortValue = useCallback((e) => setSortValue(e.target.value), []);
 
   useEffect(() => {
     if (!isPending) {
@@ -105,9 +122,12 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    setFilteredTasks(tasks);
-    filterTasks(searchText, selectedLabels, sortValue);
-  }, [tasks]);
+    setSelectedLabels((prevSelectedLabels) => {
+      return prevSelectedLabels.filter((prevSelectedLabel) =>
+        labels.includes(prevSelectedLabel)
+      );
+    });
+  }, [labels]);
 
   if (isPending) return <Loader />;
 
@@ -125,11 +145,7 @@ export const App = () => {
           <Button onClick={addTask}>Create new task</Button>
           <SortContainer>
             <SortLabel htmlFor="tasks">Sort by:</SortLabel>
-            <SortSelect
-              name="tasks"
-              id="tasks"
-              onChange={(e) => setSortValue(e.target.value)}
-            >
+            <SortSelect name="tasks" id="tasks" onChange={handleSortValue}>
               {options.map((optnItem) => (
                 <option key={optnItem}>{optnItem}</option>
               ))}
@@ -141,11 +157,12 @@ export const App = () => {
           <ActionsTitle>Subtasks Actions</ActionsTitle>
           <LabelsContainer>
             <LabelTitle>Labels:</LabelTitle>
-            {allLabels.map((label) => (
+            {labels.map((label) => (
               <ItemLabel
-                select={selectedLabels.includes(label)}
-                onClick={() => selectLabels(label)}
                 key={label}
+                data-label={label}
+                isSelected={selectedLabels.includes(label)}
+                onClick={handleSelectLabel}
               >
                 {label}
               </ItemLabel>
@@ -157,13 +174,13 @@ export const App = () => {
           <ActionsTitle>Search tasks and subtasks</ActionsTitle>
           <InputSearch
             type="text"
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={handleChangeSearch}
             value={searchText}
-            placeholder={'type text'}
+            placeholder="Start typing here..."
           />
         </ActionsWrapper>
 
-        {filteredTasks.map((task) => (
+        {filteredAndSortedTasks.map((task) => (
           <Task task={task} key={task.createTime} />
         ))}
       </Wrapper>
