@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { selectTasks } from '../../store/tasks/selectors';
+import { tasksSelector } from '../../store/tasks/selectors';
 import { addTaskRequest, fetchTasksRequest } from '../../store/tasks/actions';
 import useAction from '../../hooks/useAction';
 import GlobalStyle from '../GlobalStyle/GlobalStyle';
@@ -25,7 +25,7 @@ import {
 const options = ['date', 'name'];
 
 export const App = () => {
-  const { isPending, data: tasks } = useSelector(selectTasks);
+  const { isPending, data: tasks } = useSelector(tasksSelector);
 
   const addTask = useAction(addTaskRequest);
   const fetchTasks = useAction(fetchTasksRequest);

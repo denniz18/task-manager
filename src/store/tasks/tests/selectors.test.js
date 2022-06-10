@@ -1,10 +1,10 @@
-import { selectTasks } from '../selectors';
+import { tasksSelector } from '../selectors';
 import { stateTest } from './helpers';
 
-describe('selectTasks', () => {
+describe('tasksSelector', () => {
   test('work with empty state', () => {
     expect(
-      selectTasks({
+      tasksSelector({
         tasks: stateTest.empty,
       })
     ).toStrictEqual(stateTest.empty);
@@ -12,7 +12,7 @@ describe('selectTasks', () => {
 
   test('work with filled state', () => {
     expect(
-      selectTasks({
+      tasksSelector({
         tasks: stateTest.filled,
       })
     ).toStrictEqual(stateTest.filled);

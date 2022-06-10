@@ -1,1 +1,1 @@
-export const selectTasks = (store) => store.tasks;
+export const tasksSelector = (store) => store.tasks;
